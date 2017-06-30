@@ -1,0 +1,32 @@
+---
+- hosts: all
+  tasks:
+    - name: set hostname to local ipv4 address
+      lineinfile:
+        dest: /etc/hosts
+        line: "{{ ansible_eth0.ipv4.address }} {{ ansible_hostname }}"
+
+- hosts: mesos_masters
+  vars: 
+     docker_bridge_ip: "172.0.17.1"
+  roles:
+     - { role: Cloud-PG.consul, consul_mode: "server"  }
+     - { role: Cloud-PG.zookeeper }
+     - { role: Cloud-PG.mesos, mesos_install_mode: "master"}
+     - { role: Cloud-PG.marathon, marathon_password: "password" }
+     - { role: Cloud-PG.chronos, chronos_password: "password" }
+
+- hosts: mesos_slaves
+  vars:
+    docker_bridge_ip: "172.0.17.1"
+  roles:
+    - { role: Cloud-PG.consul, consul_mode: "agent"  }
+    - { role: Cloud-PG.mesos, mesos_install_mode: "slave" }
+
+- hosts: load_balancers
+  vars:
+    docker_bridge_ip: "172.0.17.1"
+  roles:
+    - { role: Cloud-PG.consul, consul_mode: "agent" }
+    - { role: Cloud-PG.haproxy-consul }
+    - { role: Cloud-PG.keepalived, keepalived_virtual_ip: "172.30.6.134" }
