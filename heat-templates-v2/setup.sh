@@ -8,7 +8,7 @@
 apt-get install -y python-paramiko python-netaddr
 wget http://launchpadlibrarian.net/291371956/ansible_2.1.1.0-1~ubuntu16.04.1_all.deb
 dpkg -i ansible_2.1.1.0-1~ubuntu16.04.1_all.deb
-apt-get -f install
+apt-get -f install -y
 rm ansible_2.1.1.0-1~ubuntu16.04.1_all.deb
 
 # Install ansible roles
